@@ -1,17 +1,32 @@
 # frozen_string_literal: true
+
 require 'csv'
+require_relative 'algo'
+require_relative 'csv_writer'
+require_relative 'extractor'
 require_relative 'matching_type'
+require_relative 'parser'
 
+# Entry point for program. Creates a CSV with an id
+# prepended to each row that indicates a grouping.
 class CSVMatcher
-  def self.call(path, matching_type, write: false)
-    identifier = 0
+  def self.call(path, algorithm, write: true)
+    algo = Algo.new(algorithm)
 
-    CSV.generate do |csv|
-      CSV.foreach(path, headers: true) do |row|
-        csv << row.headers.unshift('id') if identifier.zero?
-        csv << matching_type.call(row, identifier)
-        identifier += 1
-      end
-    end.tap { |csv| write && File.write("#{path.split('.').first}-matched.csv", csv) }
+    extracted = Extractor.new(algo).extract(path)
+
+    matched_rows = MatchingType.match(extracted.values)
+
+    CSVWriter.call(path, matched_rows, extracted.headers)
   end
+end
+
+options = Parser.parse(ARGV)
+if options.error
+  puts options.error
+elsif options.file.nil?
+  puts 'no file'
+else
+  CSVMatcher.call(options.file, options.algo, write: options.write)
+  puts "CSV matched into #{options.file.split('.').first}-matched.csv"
 end

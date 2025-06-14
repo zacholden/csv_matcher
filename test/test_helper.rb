@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'minitest/autorun'
 require 'csv'
 
@@ -6,8 +7,10 @@ require 'csv'
 $LOAD_PATH.unshift File.expand_path('../', __dir__)
 
 # Require the project files
-require_relative '../csv_matcher'
+require_relative '../csv_writer'
 require_relative '../matching_type'
+require_relative '../extractor'
+require_relative '../algo'
 
 # Test data helper methods can be added here
 def create_test_csv(filename, data)
