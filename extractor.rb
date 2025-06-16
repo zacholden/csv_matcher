@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Pulls data from a CSV into the format expected by the matcher
+# values is padded at with an empty array so that ids can begin at 1.
 class Extractor
   attr_reader :values, :headers, :algo, :phones, :emails
 
